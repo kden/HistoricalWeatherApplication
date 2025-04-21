@@ -1,6 +1,9 @@
 """
 Historical Weather Analysis.
 Perform a calculation on historical weather data: the greatest daily temperature change for a particular city, or the average yearly days of precipitation for a particular city.
+
+Base code by Caden Howell<cadenhowell@gmail.com>
+Claude 3.7 Sonnet was used in the Cody plugin in Pycharm for suggested line completions and some debugging.
 """
 import argparse
 import sys
@@ -86,8 +89,8 @@ def verbose_out(args, message):
 def days_of_precip(df, args):
     """Calculate the average number of days of precipitation for a city.  Print the result and return it."""
     # make new combined precipitation row
-    df['SNOW'].fillna(0, inplace=True)
-    df['PRCP'].fillna(0, inplace=True)
+    df['SNOW'] = df['SNOW'].fillna(0)
+    df['PRCP'] = df['PRCP'].fillna(0)
     df["TOTAL_PRECIP"] = df["PRCP"] + df["SNOW"]
     verbose_out(args, "With total precipitation:")
     verbose_out(args, df.head())
@@ -113,7 +116,7 @@ def max_temp_delta(df, args):
 
     # Make a copy of the DataFrame to avoid SettingWithCopyWarning
     df = df.copy()
-    # Alternatively, use the Pandas 3 feature which 
+    # Alternatively, use the Pandas 3 feature which will handle this for us.
     # pd.options.mode.copy_on_write = True
 
     # make a new column with temp delta
