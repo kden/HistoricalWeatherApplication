@@ -30,9 +30,26 @@ class TestHistoricalWeather(unittest.TestCase):
         self.test_data['YEAR'] = self.test_data['DATE'].dt.year
 
     @patch('sys.exit')
+    def test_validate_args_invalid_function_name(self, mock_exit):
+        """Test validation fails with invalid function name"""
+        args = type('Args', (), {
+            'function_name': 'invalid-function',
+            'month': None,
+            'year': None,
+            'city': 'bos',
+            'verbose': False
+        })
+
+        with patch('sys.stdout', new=io.StringIO()) as fake_out:
+            historical_weather.validate_args(args)
+            self.assertIn("Function name must be either max-temp-delta or days-of-precip", fake_out.getvalue())
+            mock_exit.assert_called_with(1)
+
+    @patch('sys.exit')
     def test_validate_args_invalid_month(self, mock_exit):
         """Test validation fails with invalid month"""
         args = type('Args', (), {
+            'function_name': 'max-temp-delta',
             'month': 13,
             'year': 2015,
             'city': 'bos',
@@ -48,6 +65,7 @@ class TestHistoricalWeather(unittest.TestCase):
     def test_validate_args_month_without_year(self, mock_exit):
         """Test validation fails with month but no year"""
         args = type('Args', (), {
+            'function_name': 'max-temp-delta',
             'month': 5,
             'year': None,
             'city': 'bos',
@@ -63,6 +81,7 @@ class TestHistoricalWeather(unittest.TestCase):
     def test_validate_args_invalid_year(self, mock_exit):
         """Test validation fails with invalid year"""
         args = type('Args', (), {
+            'function_name': 'max-temp-delta',
             'month': None,
             'year': 2005,
             'city': 'bos',
@@ -75,9 +94,42 @@ class TestHistoricalWeather(unittest.TestCase):
             mock_exit.assert_called_with(1)
 
     @patch('sys.exit')
+    def test_validate_args_month_with_wrong_function(self, mock_exit):
+        """Test validation fails when month is specified with a function other than max-temp-delta"""
+        args = type('Args', (), {
+            'function_name': 'days-of-precip',
+            'month': 5,
+            'year': 2015,
+            'city': 'bos',
+            'verbose': False
+        })
+
+        with patch('sys.stdout', new=io.StringIO()) as fake_out:
+            historical_weather.validate_args(args)
+            self.assertIn("Function name must be max-temp-delta to specify a month", fake_out.getvalue())
+            mock_exit.assert_called_with(1)
+
+    @patch('sys.exit')
+    def test_validate_args_year_with_wrong_function(self, mock_exit):
+        """Test validation fails when month is specified with a function other than max-temp-delta"""
+        args = type('Args', (), {
+            'function_name': 'days-of-precip',
+            'month': None,
+            'year': 2015,
+            'city': 'bos',
+            'verbose': False
+        })
+
+        with patch('sys.stdout', new=io.StringIO()) as fake_out:
+            historical_weather.validate_args(args)
+            self.assertIn("Function name must be max-temp-delta to specify a year", fake_out.getvalue())
+            mock_exit.assert_called_with(1)
+
+    @patch('sys.exit')
     def test_validate_args_invalid_city(self, mock_exit):
         """Test validation fails with invalid city"""
         args = type('Args', (), {
+            'function_name': 'max-temp-delta',
             'month': None,
             'year': None,
             'city': 'nyc',
@@ -93,6 +145,7 @@ class TestHistoricalWeather(unittest.TestCase):
     def test_validate_args_missing_city(self, mock_exit):
         """Test validation fails with missing city"""
         args = type('Args', (), {
+            'function_name': 'max-temp-delta',
             'month': None,
             'year': None,
             'city': None,

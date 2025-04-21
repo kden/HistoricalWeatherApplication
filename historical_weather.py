@@ -55,7 +55,14 @@ def validate_args(args):
     """Validate command line arguments."""
     valid_args = True
 
+    if args.function_name not in ['max-temp-delta','days-of-precip']:
+        print("Function name must be either max-temp-delta or days-of-precip")
+        valid_args = False
+
     if args.month is not None:
+        if args.function_name != 'max-temp-delta':
+            print("Function name must be max-temp-delta to specify a month.")
+            valid_args = False
         if args.year is None:
             print("Specifying a month requires a year.")
             valid_args = False
@@ -64,6 +71,9 @@ def validate_args(args):
             valid_args = False
 
     if args.year is not None:
+        if args.function_name != 'max-temp-delta':
+            print("Function name must be max-temp-delta to specify a year.")
+            valid_args = False
         if args.year < 2010 or args.year > 2019:
             print("Year must be between 2010 and 2019.")
             valid_args = False
