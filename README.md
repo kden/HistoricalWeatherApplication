@@ -11,16 +11,19 @@ uv will install the following packages and their dependencies:
 - pytest
 
 ## Usage
-First, install the dependencies with uv:
-```bash
-uv pip install -e .
-```
-
-Then,from the command line, use uv to run the program. For example,
-
+From the command line, use uv to run the program. For example:
 ```
 uv run historical_weather.py -h
 ```
+
+If this does not work, you may need to explicitly create the virtual environment and install dependencies first:
+```bash
+uv venv
+source .venv/bin/activate
+uv pip install -e .
+```
+
+Then try the run statement again.
 
 The usage instructions are summed up by the results of running the script with the `-h` flag.
 Note that it is not necessary to put `function_name` last. You can put it first as it was done in the project
@@ -47,7 +50,18 @@ options:
                         Optional. Filename, defaults to data/noaa_historical_weather_10yr.csv
   -v, --verbose         Optional. Print more output than just the solution.
 ```
+Examples:
 
+Show the greatest daily temperature change for Boston in May of 2010:
+```bash
+$ uv run historical_weather.py max-temp-delta -c bos -y 2010 -m 5
+max_temp_delta: 20.0
+```
+Show the average number of days of precipitation for Miami over the total ten-year period:
+```bash
+$ uv run historical_weather.py days-of-precip -c mia
+days_of_precip: 144.8
+````
 
 ## Tests
 
