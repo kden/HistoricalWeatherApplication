@@ -111,6 +111,6 @@ to generate the test cases I wanted. I then checked the output and made some min
     - Calculations are correct
     - Null values in the incoming file are handled correctly (for precipitation and snow.)
     - I didn't test the filename override flag; try it at your peril.
-- **Error Handling** Most of the error handling is handled by the argparse module and validate_args function. Had the
+- **Error Handling** Most of the error handling is handled by the `argparse` module and `validate_args` function. Had the
   instructions not included hardcoding this to a particular input file, I would have added more handling and unit tests
   to check the validity of the file, for missing columns or invalid data types, for example.
