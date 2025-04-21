@@ -6,6 +6,7 @@
 - uv
 - Python 3.11 or above
 - Pandas
+- pytest
 
 ## Usage
 

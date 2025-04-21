@@ -2,8 +2,15 @@
 name = "historicalweatherapplication"
 version = "0.1.0"
 description = "Historical Weather Application"
-authors = ["Caden Howell<cadenhowell@gmail.com>"]
+authors = [
+  {name = "Caden Howell", email = "cadenhowell@gmail.com"}
+]
 requires-python = ">=3.11"
 dependencies = [
     "pandas>=2.2.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
 ]
