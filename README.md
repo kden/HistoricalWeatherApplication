@@ -15,7 +15,7 @@ uv run historical_weather.py -h
 ```
 
 
-The usage instructions are summed up by the results of running the script with the -h flag.
+The usage instructions are summed up by the results of running the script with the `-h` flag.
 The only difference is that it is not necessary to put `function_name` last.  You can put it first as it was done in the project instructions.
 
 ```bash

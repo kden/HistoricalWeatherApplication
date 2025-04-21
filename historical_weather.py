@@ -1,3 +1,7 @@
+"""
+Historical Weather Analysis.
+Perform a calculation on historical weather data: the greatest daily temperature change for a particular city, or the average yearly days of precipitation for a particular city.
+"""
 import argparse
 import sys
 import pandas as pd
@@ -10,15 +14,21 @@ STATION_MAP = {
     "mia": "USW00012839"
 }
 
+
 def parse_args():
     """Parse command line arguments."""
-    parser = argparse.ArgumentParser(description="Perform a function on historical weather data: the greatest daily temperature change for a particular city, or the average yearly days of precipitation for a particular city.")
+    parser = argparse.ArgumentParser(
+        description="Perform a calculation on historical weather data: the greatest daily temperature change for a particular city, or the average yearly days of precipitation for a particular city.")
     parser.add_argument("function_name", help="Required. Either max-temp-delta or days-of-precip")
     parser.add_argument("-c", "--city", type=str, help="Required. Which city to evaluate: bos, jnu, or mia")
-    parser.add_argument("-y", "--year", type=int, help="(max-temp-delta only) Optional.  Restrict search to a particular year in the range 2010-2019.")
-    parser.add_argument("-m", "--month", type=int, help="(max-temp-delta only) Optional.  Restrict search to a particular month in the range 1-12.)  Requires a year.")
-    parser.add_argument("-f", "--filename", type=str, default=FILENAME, help=f"Optional. Filename, defaults to {FILENAME}")
-    parser.add_argument("-v", "--verbose", action='store_true', help="Optional. Print more output than just the solution.")
+    parser.add_argument("-y", "--year", type=int,
+                        help="(max-temp-delta only) Optional.  Restrict search to a particular year in the range 2010-2019.")
+    parser.add_argument("-m", "--month", type=int,
+                        help="(max-temp-delta only) Optional.  Restrict search to a particular month in the range 1-12.)  Requires a year.")
+    parser.add_argument("-f", "--filename", type=str, default=FILENAME,
+                        help=f"Optional. Filename, defaults to {FILENAME}")
+    parser.add_argument("-v", "--verbose", action='store_true',
+                        help="Optional. Print more output than just the solution.")
 
     args = parser.parse_args()
     validate_args(args)
@@ -39,6 +49,7 @@ def parse_args():
 
 
 def validate_args(args):
+    """Validate command line arguments."""
     valid_args = True
 
     if args.month is not None:
@@ -67,29 +78,33 @@ def validate_args(args):
 
 
 def verbose_out(args, message):
+    """Print message if verbose output is enabled."""
     if args.verbose is True:
         print(message)
 
 
 def days_of_precip(df, args):
+    """Calculate the average number of days of precipitation for a city.  Print the result and return it."""
     # make new combined precipitation row
     df['SNOW'].fillna(0, inplace=True)
     df['PRCP'].fillna(0, inplace=True)
     df["TOTAL_PRECIP"] = df["PRCP"] + df["SNOW"]
-    verbose_out(args,"With total precipitation:")
+    verbose_out(args, "With total precipitation:")
     verbose_out(args, df.head())
     # filter to days with non-zero total precipitation
     df = df[df["TOTAL_PRECIP"] > 0]
     # count up by year
     df = df.groupby(["YEAR"]).count()
-    verbose_out(args,"Grouped by year:")
+    verbose_out(args, "Grouped by year:")
     verbose_out(args, df.head())
     average_days = df["TOTAL_PRECIP"].mean()
     print(f"days_of_precip: {average_days:.1f}")
     # We are printing instead of using the result, but normally it seems like a function like this would return it.
     return average_days
 
+
 def max_temp_delta(df, args):
+    """Calculate the greatest daily temperature change for a city.  Print the result and return it."""
     # filter to year, month
     if args.year is not None:
         df = df[df["YEAR"] == args.year]
@@ -103,24 +118,22 @@ def max_temp_delta(df, args):
 
     # make a new column with temp delta
     df["TEMP_DELTA"] = df["TMAX"] - df["TMIN"]
-    verbose_out(args,"With temp delta:")
+    verbose_out(args, "With temp delta:")
     verbose_out(args, df.head())
     max_delta = df["TEMP_DELTA"].max()
     print(f"max_temp_delta: {max_delta:.1f}")
     # We are printing instead of using the result, but normally it seems like a function like this would return it.
     return max_delta
 
+
 def main():
-  
-    
     # Process the file and options
-    args =  parse_args()
+    args = parse_args()
     verbose_out(args, "Processing file...")
 
     df = pd.read_csv(f"{args.filename}")
     # Drop unused columns
-    df = df[["PRCP","SNOW","TMAX","TMIN","STATION","DATE"]]
-
+    df = df[["PRCP", "SNOW", "TMAX", "TMIN", "STATION", "DATE"]]
 
     # All cases are limited by city
     station_code = STATION_MAP[args.city]
@@ -129,12 +142,13 @@ def main():
     df["DATE"] = pd.to_datetime(df["DATE"])
     df["MONTH"] = df["DATE"].dt.month
     df["YEAR"] = df["DATE"].dt.year
-    verbose_out(args,"Data sample:")
+    verbose_out(args, "Data sample:")
     verbose_out(args, df.head())
     if args.function_name == "days-of-precip":
         days_of_precip(df, args)
     if args.function_name == "max-temp-delta":
         max_temp_delta(df, args)
+
 
 if __name__ == "__main__":
     main()
